@@ -1,0 +1,18 @@
+CREATE OR REPLACE TABLE `mi-biblioteca-502619.salud_linea123.fct_incidentes_mensual` AS
+SELECT
+  YEAR,
+  MONTH,
+  LOCALITY,
+  SHIFT_PERIOD,
+  AGE_GROUP,
+  FINAL_PRIORITY,
+  COUNT(1) AS total_incidents,
+  COUNTIF(is_missing_reception) AS missing_reception_count,
+  COUNTIF(is_missing_demographic) AS missing_demographic_count,
+  COUNTIF(is_extreme_latency_6h) AS extreme_latency_count,
+  COUNTIF(is_time_inconsistency) AS time_inconsistency_count,
+  ROUND(AVG(latency_minutes), 1) AS avg_latency_minutes
+FROM
+  `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+GROUP BY
+  year, month, locality, shift_period, age_group, final_priority;
