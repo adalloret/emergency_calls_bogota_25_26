@@ -1,0 +1,41 @@
+SELECT 
+  locality,
+  age_group,
+  COUNT(*) AS total_incidents, 
+ROUND(AVG(latency_minutes),1) AS avg_latency_minutes
+FROM
+  `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+WHERE 
+  locality IS NOT NULL
+GROUP BY locality, age_group
+ORDER BY total_incidents desc
+LIMIT 20;
+
+# senior by locality
+WITH senior_by_locality AS (
+    SELECT 
+        locality,
+        COUNT(1) AS senior_incidents,
+        ROUND(AVG(latency_minutes), 1) AS avg_senior_latency
+    FROM `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+    WHERE age_group = 'senior'
+      AND locality IS NOT NULL 
+      AND locality NOT IN ('FUERA DE BOGOTÁ', 'SIN_D')
+      AND latency_minutes IS NOT NULL 
+      AND latency_minutes >= 0
+    GROUP BY locality
+),
+volume_threshold AS (
+    SELECT 
+        APPROX_QUANTILES(senior_incidents, 100)[OFFSET(25)] AS p25_senior_threshold
+    FROM senior_by_locality
+)
+SELECT 
+    s.locality,
+    s.senior_incidents,
+    s.avg_senior_latency
+FROM senior_by_locality s
+CROSS JOIN volume_threshold v
+WHERE s.senior_incidents >= v.p25_senior_threshold
+ORDER BY s.avg_senior_latency DESC
+LIMIT 5;
