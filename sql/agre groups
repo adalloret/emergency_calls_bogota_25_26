@@ -1,0 +1,10 @@
+SELECT
+  age_group,
+  COUNT(1) AS total_incidents,
+  ROUND(COUNT(1) * 100 / SUM(COUNT(1)) OVER(), 2) AS pct_total_volume,
+  COUNTIF(is_missing_reception) AS missing_reception_count,
+  ROUND(COUNTIF(is_missing_reception) * 100.0 / COUNT(1), 2) AS pct_missing_reception,
+  ROUND(AVG(latency_minutes), 1) AS avg_latency_minutes
+FROM `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+GROUP BY age_group
+ORDER BY pct_total_volume desc;
