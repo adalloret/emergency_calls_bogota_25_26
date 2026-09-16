@@ -37,7 +37,10 @@ The core analytics layer unifies 12 monthly CSV tables using a `COALESCE` patter
 
 --- 
 
-## Dashboard Previews
+## Dashboard 
+[Looker Studio / Data Studio Dashboard](https://datastudio.google.com/reporting/3df5afef-8080-4e3e-ad1f-4839bd60a88c)
+
+## Previews
 ### Page 1: Audit and Traceability
 ![Audit and Traceability](Audit%20and%20Traceability.jpg)
 ### Page 2: Operations
