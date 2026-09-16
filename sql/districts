@@ -1,0 +1,29 @@
+WITH locality_aggregates AS (
+    SELECT 
+        locality,
+        COUNT(1) AS total_incidents,
+        COUNTIF(is_missing_reception) AS missing_reception_count,
+        ROUND(COUNTIF(is_missing_reception) * 100.0 / COUNT(1), 2) AS pct_missing_reception,
+        ROUND(AVG(latency_minutes), 1) AS avg_latency_minutes
+    FROM `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+    WHERE locality IS NOT NULL 
+      AND locality NOT IN ('FUERA DE BOGOTÁ', 'SIN_D')
+    GROUP BY locality
+),
+volume_threshold AS (
+    -- Calculamos el Percentil 25 (ó 50 / Mediana) del volumen de incidentes
+    SELECT 
+        APPROX_QUANTILES(total_incidents, 100)[OFFSET(25)] AS p25_volume_threshold
+    FROM locality_aggregates
+)
+SELECT 
+    la.locality,
+    la.total_incidents,
+    la.missing_reception_count,
+    la.pct_missing_reception,
+    la.avg_latency_minutes,
+    vt.p25_volume_threshold
+FROM locality_aggregates la
+CROSS JOIN volume_threshold vt
+WHERE la.total_incidents >= vt.p25_volume_threshold
+ORDER BY la.pct_missing_reception DESC;
