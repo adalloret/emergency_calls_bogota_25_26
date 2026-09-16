@@ -39,12 +39,11 @@ The core analytics layer unifies 12 monthly CSV tables using a `COALESCE` patter
 
 ## Dashboard Previews
 ### Page 1: Audit and Traceability
-![Audit and Traceability](image1)
+![Audit and Traceability](Audit%20and%20Traceability.jpg)
 ### Page 2: Operations
-![Operations](image2)
+![Operations](Operations.jpg)
 ### Page 3: Demographic and Shifts
-![Demographic and Shifts](emergency_calls_bogota_25_26
-/Demographic and Shifts.jpg)
+![Demographic and Shifts](Demographic%20and%20Shifts.jpg)
 
 
 
