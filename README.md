@@ -43,7 +43,8 @@ The core analytics layer unifies 12 monthly CSV tables using a `COALESCE` patter
 ### Page 2: Operations
 ![Operations](image2)
 ### Page 3: Demographic and Shifts
-![Demographic and Shifts](image3)
+![Demographic and Shifts](emergency_calls_bogota_25_26
+/Demographic and Shifts.jpg)
 
 
 
