@@ -1,0 +1,52 @@
+SELECT
+  year,  
+  month,
+  count(1) as total_incidents,
+  countif(is_missing_reception) as missing_reception_count,
+  round(countif(is_missing_reception) * 100.0 / count(1), 2) as pct_missing_reception,
+  countif(is_extreme_latency_6h) as extreme_latency_count,
+  round(avg(latency_minutes), 1) as avg_latency_minutes
+FROM 
+  `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+GROUP BY year, month
+ORDER BY extreme_latency_count DESC;
+
+# Global loss rate percentage
+SELECT 
+    COUNT(1) AS total_incidents_year,
+    COUNTIF(is_missing_reception) AS total_missing_reception_year,
+    ROUND(COUNTIF(is_missing_reception) * 100.0 / COUNT(1), 2) AS global_loss_rate_pct
+FROM `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`;
+
+# Avg and median latency minutes
+SELECT
+  COUNT(1) AS total_incident,
+  ROUND(AVG(latency_minutes),1) AS avg_latency_minutes,
+  ROUND(approx_quantiles(latency_minutes, 100)[offset(50)], 1) AS median_latency_minutes
+FROM
+  `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+WHERE latency_minutes IS NOT NULL
+  AND latency_minutes >= 0;
+
+# Numer of incidents with extreme latency >6h 
+SELECT
+  COUNT(*) AS total_incidents,
+  COUNTIF(is_extreme_latency_6h) AS extreme_latency_count,
+  ROUND(COUNTIF(is_extreme_latency_6h) * 100 / COUNT(*), 2) AS pct_extreme_latency
+FROM
+  `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`;
+
+# Different shifts response times
+SELECT 
+  shift_period,
+  COUNT(1) AS total_incidents,
+  ROUND(AVG(latency_minutes), 1) AS avg_latency_minutes,
+  ROUND(APPROX_QUANTILES(latency_minutes, 100)[offset(50)], 1) AS median_latency_minutes,
+  ROUND(COUNT(1) * 100.0 / SUM(COUNT(1)) OVER(), 2) AS pct_share_volume
+FROM
+  `mi-biblioteca-502619.salud_linea123.vw_incidencia_historica`
+WHERE latency_minutes IS NOT NULL
+  AND latency_minutes >= 0 
+GROUP BY shift_period
+ORDER BY avg_latency_minutes desc;
+
